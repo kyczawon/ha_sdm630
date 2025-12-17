@@ -6,7 +6,7 @@ from .const import DOMAIN, VALIDATED_REGISTER_MAP as REGISTER_MAP
 from .coordinator import SDM630Coordinator
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    coordinator: SDM630Coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator: HA_SDM630Coordinator = hass.data[DOMAIN][entry.entry_id]
 
     entities = []
     for key, info in REGISTER_MAP.items():
@@ -22,10 +22,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     async_add_entities(entities)
 
 
-class SDM630Sensor(CoordinatorEntity, SensorEntity):  # ← Inherit from CoordinatorEntity
+class HA_SDM630Sensor(CoordinatorEntity, SensorEntity):  # ← Inherit from CoordinatorEntity
     """Representation of an SDM630 sensor."""
 
-    def __init__(self, coordinator: SDM630Coordinator, entry: ConfigEntry, key: str, info: dict):
+    def __init__(self, coordinator: HA_SDM630Coordinator, entry: ConfigEntry, key: str, info: dict):
         """Initialize the sensor."""
         super().__init__(coordinator)  # This handles update listening
         self._key = key
