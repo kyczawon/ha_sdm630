@@ -9,9 +9,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     coordinator: HA_SDM630Coordinator = hass.data[DOMAIN][entry.entry_id]
 
     entities = []
-    for key, info in REGISTER_MAP.items():
+    for key, info in coordinator.register_map.items():
         entities.append(
-            SDM630Sensor(
+            HA_SDM630Sensor(
                 coordinator=coordinator,
                 entry=entry,
                 key=key,
