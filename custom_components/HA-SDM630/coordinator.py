@@ -16,32 +16,15 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class SDM630Coordinator(DataUpdateCoordinator):
-    """SDM630 data coordinator using async Modbus client."""
-
-    def __init__(self, hass, port: str, slave_id: int, baudrate: int):
-        """Initialize the coordinator."""
+    def __init__(self, hass, client: AsyncModbusSerialClient, slave_id: int):
         super().__init__(
             hass,
             _LOGGER,
             name="SDM630",
-            update_interval=timedelta(seconds=20),
+            update_interval=timedelta(seconds=10),
         )
-
-        self.port = port
+        self.client = client  # ← Shared client
         self.slave_id = slave_id
-        self.baudrate = baudrate
-
-        # Use async serial client
-        self.client = AsyncModbusSerialClient(
-            port=port,
-            baudrate=baudrate,
-            parity="N",
-            stopbits=1,
-            bytesize=8,
-            timeout=5,
-        )
-
-        # Pre-calculate address groups for batch reading
         self._address_groups = self._group_addresses()
 
     def _group_addresses(self) -> Dict[int, list]:
