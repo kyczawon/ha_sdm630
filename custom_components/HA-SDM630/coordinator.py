@@ -5,7 +5,7 @@ from pymodbus.client import ModbusSerialClient
 from .const import REGISTER_MAP
 
 class SDM630Coordinator(DataUpdateCoordinator):
-    def __init__(self, hass, port, slave_id, baudrate):
+    def __init__(self, hass, port, slave_id, baudrate, update_interval):
         super().__init__(
             hass,
             _LOGGER,
