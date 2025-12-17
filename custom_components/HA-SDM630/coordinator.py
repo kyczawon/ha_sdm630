@@ -71,8 +71,6 @@ class SDM630Coordinator(DataUpdateCoordinator):
                 return not result.isError()
         except Exception as err:
             _LOGGER.debug("Connection test failed: %s", err)
-        finally:
-            await self.client.close()
         return False
 
     async def _async_update_data(self) -> dict:
