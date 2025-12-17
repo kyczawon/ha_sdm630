@@ -62,31 +62,3 @@ REGISTER_SETS = {
     },
 }
 
-def get_validated_register_map() -> Dict[str, dict]:
-    """Validate REGISTER_MAP and return it. Raises clear error on bad entries."""
-    validated = {}
-    required_keys = ["address", "name"]
-#    optional_keys = ["unit", "device_class", "state_class", "precision"]
-
-    for key, info in REGISTER_MAP.items():
-        if not isinstance(info, dict):
-            raise ValueError(f"Register '{key}' is not a dict: {info}")
-
-        for req in required_keys:
-            if req not in info:
-                raise ValueError(f"Register '{key}' missing required key '{req}'")
-
-        if not isinstance(info["address"], int):
-            raise ValueError(f"Register '{key}' address must be int: {info['address']}")
-
-        # Set defaults
-        validated_info = info.copy()
-        validated_info.setdefault("precision", 2)
-        validated_info.setdefault("state_class", "measurement")
-
-        validated[key] = validated_info
-
-    return validated
-
-# Export the validated version
-VALIDATED_REGISTER_MAP = get_validated_register_map()
