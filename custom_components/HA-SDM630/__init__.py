@@ -27,6 +27,9 @@ PLATFORMS = [Platform.SENSOR]
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up SDM630 from a config entry."""
     config = entry.data
+    # Use options for the register set so users can change it without reinstalling
+    register_set_key = entry.options.get(CONF_REGISTER_SET, DEFAULT_REGISTER_SET)
+    selected_registers = REGISTER_SETS.get(register_set_key, REGISTER_SETS[REGISTER_SET_BASIC])
 
     port = config[CONF_SERIAL_PORT]
     baudrate = config[CONF_BAUDRATE]
@@ -40,10 +43,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hub = hubs[hub_key]
 
-    # Determine which register set to use
-    register_set = entry.options.get(CONF_REGISTER_SET, DEFAULT_REGISTER_SET)
-    selected_registers = REGISTER_SETS[register_set]
-
     # Create coordinator with shared client and selected registers
     coordinator = HA_SDM630Coordinator(
         hass,
@@ -51,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         config[CONF_SLAVE_ID],
         selected_registers,  # Pass the selected register map
     )
-
+    entry.async_on_unload(entry.add_update_listener(update_listener))
     # Store config for unload cleanup
     coordinator.config = config
 
@@ -106,6 +105,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     return True
 
+async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Handle options update."""
+    await hass.config_entries.async_reload(entry.entry_id)
 
 class SDM630Hub:
     """Manages a single serial connection shared across meters."""
