@@ -8,16 +8,11 @@ from .coordinator import SDM630Coordinator
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     coordinator: HA_SDM630Coordinator = hass.data[DOMAIN][entry.entry_id]
 
-    entities = []
-    for key, info in coordinator.register_map.items():
-        entities.append(
-            HA_SDM630Sensor(
-                coordinator=coordinator,
-                entry=entry,
-                key=key,
-                info=info,
-            )
-        )
+    # The coordinator already knows which registers to create
+    entities = [
+        HA_SDM630Sensor(coordinator, entry, key, info)
+        for key, info in coordinator.register_map.items()
+    ]
 
     async_add_entities(entities)
 
