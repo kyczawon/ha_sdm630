@@ -2,8 +2,8 @@ from homeassistant.components.sensor import SensorEntity, SensorStateClass, Sens
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import CoordinatorEntity
-from .const import DOMAIN, VALIDATED_REGISTER_MAP as REGISTER_MAP
-from .coordinator import SDM630Coordinator
+from .const import DOMAIN
+from .coordinator import HA_SDM630Coordinator
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
     coordinator: HA_SDM630Coordinator = hass.data[DOMAIN][entry.entry_id]
