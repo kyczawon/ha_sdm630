@@ -26,7 +26,7 @@ class HA_SDM630Coordinator(DataUpdateCoordinator):
         self.register_map = register_map
         self._address_groups = self._group_addresses(register_map)  # Use passed map
 
-    def _group_addresses(self) -> Dict[int, list]:
+    def _group_addresses(self, reg_map: dict) -> Dict[int, list]:
         """Group consecutive register addresses to minimize requests."""
         addresses = sorted([(info["address"], key) for key, info in reg_map.items()])
         groups = {}
