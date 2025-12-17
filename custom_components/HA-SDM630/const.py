@@ -142,7 +142,7 @@ def get_validated_register_map() -> Dict[str, dict]:
     """Validate REGISTER_MAP and return it. Raises clear error on bad entries."""
     validated = {}
     required_keys = ["address", "name"]
-    optional_keys = ["unit", "device_class", "state_class", "precision"]
+#    optional_keys = ["unit", "device_class", "state_class", "precision"]
 
     for key, info in REGISTER_MAP.items():
         if not isinstance(info, dict):
