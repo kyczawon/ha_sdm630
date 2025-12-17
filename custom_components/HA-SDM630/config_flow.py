@@ -1,11 +1,12 @@
 """Config flow for SDM630 integration."""
 
 import logging
-import serial.tools.list_ports
 from typing import Any
 
+import serial.tools.list_ports
 import voluptuous as vol
-from pymodbus.client import ModbusSerialClient
+from pymodbus.client import AsyncModbusSerialClient
+from pymodbus.exceptions import ModbusException
 
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
@@ -33,48 +34,95 @@ class SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
         errors = {}
 
-        # Auto-discover serial ports for dropdown
+        # Discover serial ports every time (in case plugged/unplugged)
         ports = await self.hass.async_add_executor_job(serial.tools.list_ports.comports)
-        port_options = {port.device: f"{port.device} ({port.description})" for port in ports}
 
-        if user_input is not None:
-            # Validate connection
-            try:
-                await self._async_test_connection(user_input)
-                return self.async_create_entry(title=user_input[CONF_NAME], data=user_input)
-            except Exception as err:
-                errors["base"] = "cannot_connect"
-                _LOGGER.error("Connection test failed: %s", err)
+        port_options = [
+            selector.SelectOptionDict(
+                value=port.device,
+                label=(
+                    f"{port.device} - {port.description or 'Unknown device'}"
+                    + (f" ({port.manufacturer})" if port.manufacturer else "")
+                ),
+            )
+            for port in ports
+            if port.device
+        ]
+        port_options.sort(key=lambda x: x["value"])
 
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_NAME, default="SDM630 Meter"): str,
+                vol.Required(CONF_NAME, default="SDM630"): str,
                 vol.Required(CONF_SERIAL_PORT): selector.SelectSelector(
-                    selector.SelectSelectorConfig(options=list(port_options.keys()), mode=selector.SelectSelectorMode.DROPDOWN)
+                    selector.SelectSelectorConfig(
+                        options=port_options,
+                        mode=selector.SelectSelectorMode.DROPDOWN,
+                    )
                 ),
-                vol.Required(CONF_SLAVE_ID, default=DEFAULT_SLAVE_ID): vol.All(vol.Coerce(int), vol.Range(min=1, max=247)),
-                vol.Required(CONF_BAUDRATE, default=DEFAULT_BAUDRATE): vol.In([2400, 4800, 9600, 19200, 38400]),
+                vol.Required(CONF_SLAVE_ID, default=DEFAULT_SLAVE_ID): vol.All(
+                    vol.Coerce(int), vol.Range(min=1, max=247)
+                ),
+                vol.Required(CONF_BAUDRATE, default=DEFAULT_BAUDRATE): vol.In(
+                    [2400, 4800, 9600, 19200, 38400]
+                ),
             }
         )
 
-        return self.async_show_form(step_id="user", data_schema=data_schema, errors=errors)
+        if user_input is not None:
+            try:
+                await self._async_test_connection(user_input)
+
+                return self.async_create_entry(
+                    title=user_input[CONF_NAME],
+                    data={
+                        CONF_NAME: user_input[CONF_NAME],
+                        CONF_SERIAL_PORT: user_input[CONF_SERIAL_PORT],
+                        CONF_SLAVE_ID: user_input[CONF_SLAVE_ID],
+                        CONF_BAUDRATE: user_input[CONF_BAUDRATE],
+                    },
+                )
+
+            except ConnectionError:
+                errors["base"] = "cannot_connect"
+            except ModbusException:
+                errors["base"] = "read_error"
+            except ValueError:
+                errors["base"] = "read_error"
+            except Exception as err:
+                errors["base"] = "unknown"
+                _LOGGER.exception("Unexpected error during SDM630 setup: %s", err)
+
+        # Show form on first load or after error
+        return self.async_show_form(
+            step_id="user",
+            data_schema=data_schema,
+            errors=errors,
+        )
 
     async def _async_test_connection(self, data: dict[str, Any]) -> None:
-        """Test Modbus connection."""
-        client = ModbusSerialClient(
+        """Test connection to the SDM630 meter."""
+        client = AsyncModbusSerialClient(
             port=data[CONF_SERIAL_PORT],
             baudrate=data[CONF_BAUDRATE],
             parity="N",
             stopbits=1,
             bytesize=8,
-            timeout=3,
+            timeout=5,
         )
         try:
-            if not await self.hass.async_add_executor_job(client.connect):
-                raise ConnectionError("Failed to connect")
-            # Test read (e.g., voltage L1 at address 0)
-            rr = client.read_holding_registers(0, 1, slave=data[CONF_SLAVE_ID])
-            if rr.isError():
-                raise ValueError("Read error")
+            await client.connect()
+            if not client.connected:
+                raise ConnectionError("Failed to open serial port")
+
+            result = await client.read_input_registers(
+                address=0, count=2, slave=data[CONF_SLAVE_ID]
+            )
+
+            if result.isError():
+                raise ModbusException(f"Modbus read error: {result}")
+
+            if len(result.registers) != 2:
+                raise ValueError("Invalid response: expected 2 registers")
+
         finally:
-            client.close()
+            await client.close()
