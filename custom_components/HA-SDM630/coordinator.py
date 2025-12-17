@@ -25,7 +25,8 @@ class HA_SDM630Coordinator(DataUpdateCoordinator):
         )
         self.client = client  # ← Shared client
         self.slave_id = slave_id
-        self._address_groups = self._group_addresses()
+        self.register_map = register_map
+        self._address_groups = self._group_addresses(register_map)  # Use passed map
 
     def _group_addresses(self) -> Dict[int, list]:
         """Group consecutive register addresses to minimize requests."""
