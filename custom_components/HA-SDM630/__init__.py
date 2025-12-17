@@ -39,11 +39,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hub = hubs[hub_key]
     register_set = entry.options.get(CONF_REGISTER_SET, DEFAULT_REGISTER_SET)
-
+    selected_registers = REGISTER_SETS[register_set]
     coordinator = HA_SDM630Coordinator(
         hass,
         hub.client,  # ← Pass shared client
-        config[CONF_SLAVE_ID],
+        config[CONF_SLAVE_ID], selected_registers
     )
     coordinator.config = config  # Save for later unload
     coordinator.register_map = REGISTER_SETS[register_set]
