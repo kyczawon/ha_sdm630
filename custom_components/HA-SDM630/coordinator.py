@@ -61,16 +61,30 @@ class HA_SDM630Coordinator(DataUpdateCoordinator):
             return False
 
     async def async_test_connection(self) -> bool:
-        """Test connection during config flow."""
+        """Test connection during setup using a temporary client."""
+        temp_client = AsyncModbusSerialClient(
+            port=self.client.port,
+            baudrate=self.client.comm_params.baudrate,
+            parity="N",
+            stopbits=1,
+            bytesize=8,
+            timeout=5,
+        )
         try:
-            if await self._async_connect():
-                # Try reading one known register
-                client.unit = data[CONF_SLAVE_ID]
-                result = await self.client.read_input_registers(address=0, count=2)
-                return not result.isError()
+            await temp_client.connect()
+            if not temp_client.connected:
+                return False
+
+            temp_client.unit = self.slave_id
+
+            result = await temp_client.read_input_registers(address=0, count=2)
+            return not result.isError()
+
         except Exception as err:
-            _LOGGER.debug("Connection test failed: %s", err)
-        return False
+            _LOGGER.debug("SDM630 connection test failed: %s", err)
+            return False
+        finally:
+            await temp_client.close()
 
     async def _async_update_data(self) -> dict:
         """Fetch all data in batched async reads."""
@@ -82,7 +96,7 @@ class HA_SDM630Coordinator(DataUpdateCoordinator):
         try:
             for start_addr, keys in self._address_groups.items():
                 count = len(keys) * 2  # 2 registers per float
-                client.unit = data[CONF_SLAVE_ID]
+                self.client.unit = data[CONF_SLAVE_ID]
                 result = await self.client.read_input_registers(address=start_addr,count=count)
 
                 if result.isError():
