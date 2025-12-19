@@ -1,7 +1,7 @@
 from homeassistant.components.sensor import SensorEntity, SensorStateClass, SensorDeviceClass
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.entity import CoordinatorEntity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import DOMAIN
 from .coordinator import HA_SDM630Coordinator
 
