@@ -56,7 +56,7 @@ class HA_SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry: ConfigEntry):
         """Get the options flow for this handler."""
-        return OptionsFlowHandler(config_entry)
+        return SDM630OptionsFlowHandler(config_entry)
         
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Handle connection type selection."""
@@ -269,10 +269,10 @@ class HA_SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 except Exception as err:
                     _LOGGER.debug("Error closing Modbus TCP client: %s", err)
                     
-class OptionsFlowHandler(config_entries.OptionsFlow):
-    def __init__(self, config_entry):
+class SDM630OptionsFlowHandler(config_entries.OptionsFlow):
+    def __init__(self, config_entry: ConfigEntry):
         """Initialize options flow."""
-        self.config_entry = config_entry
+    #    self.config_entry = config_entry # this is wrong!
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Manage the options."""
