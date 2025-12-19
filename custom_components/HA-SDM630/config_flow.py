@@ -13,15 +13,17 @@ from homeassistant.const import CONF_NAME
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
 from homeassistant.core import callback
-from homeassistant.config_entries import CannotConnect
 
 from .const import (
     CONF_BAUDRATE,
+    CONF_BYTESIZE,
     CONF_CONNECTION_TYPE,
     CONF_HOST,
+    CONF_PARITY,
     CONF_PORT,
     CONF_SERIAL_PORT,
     CONF_SLAVE_ID,
+    CONF_STOPBITS,
     CONNECTION_TYPE_SERIAL,
     CONNECTION_TYPE_TCP,
     DEFAULT_BAUDRATE,
@@ -71,10 +73,7 @@ class HA_SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             }
         )
 
-        return self.async_show_form(
-            step_id="user",
-            data_schema=data_schema,
-        )
+        return self.async_show_form(step_id="user",data_schema=data_schema)
 
     async def async_step_serial(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Handle serial connection configuration."""
@@ -108,9 +107,10 @@ class HA_SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_SLAVE_ID, default=DEFAULT_SLAVE_ID): vol.All(
                     vol.Coerce(int), vol.Range(min=1, max=247)
                 ),
-                vol.Required(CONF_BAUDRATE, default=DEFAULT_BAUDRATE): vol.In(
-                    [2400, 4800, 9600, 19200, 38400]
-                ),
+                vol.Required(CONF_BAUDRATE, default=DEFAULT_BAUDRATE): vol.In([2400, 4800, 9600, 19200, 38400]),
+                vol.Required(CONF_PARITY, default="N"): vol.In(["N", "E", "O"]),
+                vol.Required(CONF_STOPBITS, default=1): vol.In([1, 2]),
+                vol.Required(CONF_BYTESIZE, default=8): vol.In([7, 8]),
             }
         )
 
@@ -126,6 +126,9 @@ class HA_SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         CONF_SERIAL_PORT: user_input[CONF_SERIAL_PORT],
                         CONF_SLAVE_ID: user_input[CONF_SLAVE_ID],
                         CONF_BAUDRATE: user_input[CONF_BAUDRATE],
+                        CONF_PARITY: user_input[CONF_PARITY],
+                        CONF_STOPBITS: user_input[CONF_STOPBITS],
+                        CONF_BYTESIZE: user_input[CONF_BYTESIZE],
                     },
                 )
 
@@ -139,11 +142,7 @@ class HA_SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "unknown"
                 _LOGGER.exception("Unexpected error during SDM630 serial setup: %s", err)
 
-        return self.async_show_form(
-            step_id="serial",
-            data_schema=data_schema,
-            errors=errors,
-        )
+        return self.async_show_form(step_id="serial",data_schema=data_schema,errors=errors)
 
     async def async_step_tcp(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Handle TCP connection configuration."""
@@ -187,17 +186,13 @@ class HA_SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "unknown"
                 _LOGGER.exception("Unexpected error during SDM630 TCP setup: %s", err)
 
-        return self.async_show_form(
-            step_id="tcp",
-            data_schema=data_schema,
-            errors=errors,
-        )
+        return self.async_show_form(step_id="tcp", data_schema=data_schema, errors=errors)
 
     async def _async_test_serial_connection(self, user_input):
         client = None
         try:
             client = AsyncModbusSerialClient(
-                port=user_input[CONF_PORT],
+                port=user_input[CONF_SERIAL_PORT],
                 baudrate=user_input.get(CONF_BAUDRATE, 9600),
                 parity=user_input.get(CONF_PARITY, "N"),
                 stopbits=user_input.get(CONF_STOPBITS, 1),
@@ -206,56 +201,54 @@ class HA_SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
     
             if not await client.connect():
-                raise CannotConnect("Failed to connect to serial port")
+                if not client.connected:
+                    raise ConnectionError("Failed to open serial port")
     
-            # Optional: test read from a known register (e.g. unit ID or voltage)
-            client.unit = user_input[CONF_SLAVE_ID]
-            reader = await client.read_input_registers(0, 1)
+            reader = await client.read_input_registers(address=0, count=2, slave=data[CONF_SLAVE_ID])
             if reader.isError():
-                raise CannotConnect("Modbus read failed")
-    
+                raise ModbusException(f"Modbus read error: {reader}")
+            if len(result.registers) != 2:
+                raise ValueError("Invalid response: expected 2 registers")    
             # Success!
             return
     
         except Exception as err:
-            raise CannotConnect(str(err)) from err
+           raise ConnectionError((str(err)) from err
     
         finally:
             if client is not None:
                 await client.close()
 
-async def _async_test_tcp_connection(self, data: dict[str, Any]) -> None:
-    """Test TCP connection to the SDM630 meter."""
-    client = None
-    try:
-        client = AsyncModbusTcpClient(
-            host=data[CONF_HOST],
-            port=data[CONF_PORT],
-            timeout=5,
-        )
-
-        # Connect and verify
-        await client.connect()
-        if not client.connected:
-            raise ConnectionError(f"Failed to connect to {data[CONF_HOST]}:{data[CONF_PORT]}")
-
-        # Set slave ID and test read
-        client.unit = data[CONF_SLAVE_ID]
-        result = await client.read_input_registers(address=0, count=2, unit=data[CONF_SLAVE_ID])
-
-        if result.isError():
-            raise ModbusException(f"Modbus read error: {result}")
-
-        if len(result.registers) != 2:
-            raise ValueError("Invalid response: expected 2 registers")
-
-        # Success! (no need to return anything)
-
-    finally:
-        # Safe close — only if client was created and has close method
-        if client is not None:
-            try:
-                await client.close()
-            except Exception as err:
-                # Log but don't fail the test if close fails
-                _LOGGER.debug("Error closing Modbus TCP client: %s", err)
+    async def _async_test_tcp_connection(self, data: dict[str, Any]) -> None:
+        """Test TCP connection to the SDM630 meter."""
+        client = None
+        try:
+            client = AsyncModbusTcpClient(
+                host=data[CONF_HOST],
+                port=data[CONF_PORT],
+                timeout=5,
+            )
+    
+            # Connect and verify
+            await client.connect()
+            if not client.connected:
+                raise ConnectionError(f"Failed to connect to {data[CONF_HOST]}:{data[CONF_PORT]}")
+    
+            result = await client.read_input_registers(address=0, count=2, unit=data[CONF_SLAVE_ID])
+    
+            if result.isError():
+                raise ModbusException(f"Modbus read error: {result}")
+    
+            if len(result.registers) != 2:
+                raise ValueError("Invalid response: expected 2 registers")
+    
+            # Success! (no need to return anything)
+    
+        finally:
+            # Safe close — only if client was created and has close method
+            if client is not None:
+                try:
+                    await client.close()
+                except Exception as err:
+                    # Log but don't fail the test if close fails
+                    _LOGGER.debug("Error closing Modbus TCP client: %s", err)
