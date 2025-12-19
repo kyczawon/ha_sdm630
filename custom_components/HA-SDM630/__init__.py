@@ -10,15 +10,22 @@ from .options_flow import OptionsFlowHandler
 
 from .const import (
     DOMAIN,
+    CONF_BAUDRATE,
+    CONF_BYTESIZE,
     CONF_CONNECTION_TYPE,
     CONF_HOST,
+    CONF_PARITY,
     CONF_PORT,
     CONF_SERIAL_PORT,
     CONF_SLAVE_ID,
-    CONF_BAUDRATE,
+    CONF_STOPBITS,
     CONF_REGISTER_SET,
     CONNECTION_TYPE_SERIAL,
+    DEFAULT_BAUDRATE,
+    DEFAULT_BYTESIZE,
+    DEFAULT_PARITY,
     DEFAULT_REGISTER_SET,
+    DEFAULT_STOPBITS,
     REGISTER_SETS,
     REGISTER_SET_BASIC,
 )
@@ -44,10 +51,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if connection_type == CONNECTION_TYPE_SERIAL:
         port = config[CONF_SERIAL_PORT]
         baudrate = config[CONF_BAUDRATE]
-        hub_key = f"serial_{port}_{baudrate}"
+        parity = config.get(CONF_PARITY, DEFAULT_PARITY)
+        stopbits = config.get(CONF_STOPBITS, DEFAULT_STOPBITS)
+        bytesize = config.get(CONF_BYTESIZE, DEFAULT_BYTESIZE)
+        hub_key = f"serial_{port}_{baudrate}_{parity}_{stopbits}_{bytesize}"
         
         if hub_key not in hubs:
-            hubs[hub_key] = SDM630SerialHub(hass, port, baudrate)
+            hubs[hub_key] = SDM630SerialHub(hass, port, baudrate, parity, stopbits, bytesize)
     else:  # TCP
         host = config[CONF_HOST]
         port = config[CONF_PORT]
@@ -127,24 +137,37 @@ async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
 class SDM630SerialHub:
     """Manages a single serial connection shared across meters."""
 
-    def __init__(self, hass: HomeAssistant, port: str, baudrate: int):
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        port: str,
+        baudrate: int,
+        parity: str,
+        stopbits: int,
+        bytesize: int,
+    ):
         self.hass = hass
         self.port = port
         self.baudrate = baudrate
+        self.parity = parity
+        self.stopbits = stopbits
+        self.bytesize = bytesize
         self.client = AsyncModbusSerialClient(
             port=port,
             baudrate=baudrate,
-            parity="N",
-            stopbits=1,
-            bytesize=8,
+            parity=parity,
+            stopbits=stopbits,
+            bytesize=bytesize,
             timeout=5,
         )
 
     async def close(self):
         """Close the serial connection."""
         if self.client.connected:
-            await self.client.close()
-
+            try: 
+               await self.client.close()
+            except Exception as err:
+                _LOGGER.exception("Unexpected error during SDM630 serial close: %s", err)
 
 class SDM630TcpHub:
     """Manages a single TCP connection shared across meters."""
@@ -162,4 +185,7 @@ class SDM630TcpHub:
     async def close(self):
         """Close the TCP connection."""
         if self.client.connected:
-            await self.client.close()
+            try: 
+               await self.client.close()
+            except Exception as err:
+                _LOGGER.exception("Unexpected error during SDM630 tcp close: %s", err)
