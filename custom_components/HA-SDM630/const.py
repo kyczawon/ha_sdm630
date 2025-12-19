@@ -1,7 +1,7 @@
 """Constants for the Eastron SDM630 integration."""
 from typing import Dict
 
-DOMAIN = "HA_SDM630"
+DOMAIN = "ha_sdm630"
 
 # Connection types
 CONF_CONNECTION_TYPE = "connection_type"
