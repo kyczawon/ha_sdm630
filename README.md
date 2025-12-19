@@ -1,21 +1,21 @@
 # HA-SDM630 (Modbus)
 [![Home Assistant](https://img.shields.io/badge/Home_Assistant-00A1DF?style=flat-square&logo=home-assistant&logoColor=white)](https://www.home-assistant.io)
 [![HACS](https://img.shields.io/badge/HACS-Default-41BDF5?style=flat-square)](https://hacs.xyz)
-[![HACS Action](https://img.shields.io/github/actions/workflow/status/partach/ha_smd630/validate-hacs.yml?label=HACS%20Action&style=flat-square)](https://github.com/partach/ha_smd630/actions)
-[![Installs](https://img.shields.io/github/downloads/partach/ha_smd630/total?color=28A745&label=Installs&style=flat-square)](https://github.com/partach/ha_smd630/releases)
-[![License](https://img.shields.io/github/license/partach/ha_smd630?color=ffca28&style=flat-square)](https://github.com/partach/ha_smd630/blob/main/LICENSE)
+[![HACS Action](https://img.shields.io/github/actions/workflow/status/partach/ha_sdm630/validate-hacs.yml?label=HACS%20Action&style=flat-square)](https://github.com/partach/ha_sdm630/actions)
+[![Installs](https://img.shields.io/github/downloads/partach/ha_sdm630/total?color=28A745&label=Installs&style=flat-square)](https://github.com/partach/ha_sdm630/releases)
+[![License](https://img.shields.io/github/license/partach/ha_sdm630?color=ffca28&style=flat-square)](https://github.com/partach/ha_sdm630/blob/main/LICENSE)
 [![HACS validated](https://img.shields.io/badge/HACS-validated-41BDF5?style=flat-square)](https://github.com/hacs/integration)
 
 SDM630 home assistant integration for easy setup and use of the device (via Modbus)
 
 
 <p align="center">
-  <img src="https://github.com/partach/ha_smd630/blob/main/HA-SDM630%20hub.png" width="600"/>
+  <img src="https://github.com/partach/ha_sdm630/blob/main/HA-SDM630%20hub.png" width="600"/>
   <br>
   <em>Integration after installation</em>
 </p>
 <p align="center">
-  <img src="https://github.com/partach/ha_smd630/blob/main/HA-SDM630 product%20pic2.png" width="200"/>
+  <img src="https://github.com/partach/ha_sdm630/blob/main/HA-SDM630 product%20pic2.png" width="200"/>
   <br>
   <em>The product that will be monitored via modbus</em>
 </p>
@@ -41,24 +41,24 @@ Let the install config of the integration guide you as it asks you for the neede
 
 ## Configuration options
 <p align="center">
-  <img src="https://github.com/partach/HA-SDM630/blob/main/ha_smd630%20config1.png" width="300"/>
+  <img src="https://github.com/partach/ha_sdm630/blob/main/HA-SDM630%20config1.png" width="300"/>
   <br>
   <em>Select Serial or TCP</em>
 </p>
 <p align="center">
-  <img src="https://github.com/partach/HA-SDM630/blob/main/ha_smd630%20config2.png" width="300"/>
+  <img src="https://github.com/partach/ha_sdm630/blob/main/HA-SDM630%20config2.png" width="300"/>
   <br>
   <em>Serial Example, choose the settings you need</em>
 </p>
 
 ## Discussion 
-See [here](https://github.com/partach/ha_smd630/discussions)
+See [here](https://github.com/partach/ha_sdm630/discussions)
 
 ## Changelog
-See [CHANGELOG.md](https://github.com/partach/ha_smd630/blob/main/CHANGELOG.md)
+See [CHANGELOG.md](https://github.com/partach/ha_sdm630/blob/main/CHANGELOG.md)
 
 ## Issues
-Report at GitHub [Issues](https://github.com/partach/ha_smd6300/issues)
+Report at GitHub [Issues](https://github.com/partach/ha_sdm6300/issues)
 
 ## Support development
 If you like it and find it usefull or want to support this and future developments it would be greatly appreciated :)
