@@ -50,7 +50,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     
     if connection_type == CONNECTION_TYPE_SERIAL:
         port = config[CONF_SERIAL_PORT]
-        baudrate = config[CONF_BAUDRATE]
+        baudrate = config.get(CONF_BAUDRATE, DEFAULT_BAUDRATE)
         parity = config.get(CONF_PARITY, DEFAULT_PARITY)
         stopbits = config.get(CONF_STOPBITS, DEFAULT_STOPBITS)
         bytesize = config.get(CONF_BYTESIZE, DEFAULT_BYTESIZE)
