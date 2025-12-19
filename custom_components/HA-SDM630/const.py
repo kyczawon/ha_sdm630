@@ -16,9 +16,9 @@ CONF_REGISTER_SET = "register_set"
 # Serial settings
 CONF_SERIAL_PORT = "serial_port"
 CONF_BAUDRATE = "baudrate"
-CONF_PARITY = "N"
-CONF_STOPBITS = 1
-CONF_BYTESIZE = 8
+CONF_PARITY = "parity"
+CONF_STOPBITS = "stopbits"
+CONF_BYTESIZE = "bytesize"
 
 # TCP settings
 CONF_HOST = "host"
