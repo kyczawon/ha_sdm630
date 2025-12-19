@@ -271,38 +271,54 @@ class HA_SDM630ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     
 class OptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry):
+        """Initialize options flow."""
         self.config_entry = config_entry
 
-    async def async_step_init(self, user_input=None):
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Manage the options."""
         if user_input is not None:
-            return self.async_create_entry(data=user_input)
+            return self.async_create_entry(title="", data=user_input)
 
-        return self.async_show_form(
-            step_id="init",
-            data_schema=vol.Schema({
+        # Get current values from options (with defaults)
+        current_register_set = self.config_entry.options.get(
+            CONF_REGISTER_SET, DEFAULT_REGISTER_SET
+        )
+        current_interval = self.config_entry.options.get(
+            "update_interval", 10  # your default value in seconds
+        )
+
+        data_schema = vol.Schema(
+            {
                 vol.Required(
                     CONF_REGISTER_SET,
-                    default=self.config_entry.options.get(
-                        CONF_REGISTER_SET, DEFAULT_REGISTER_SET
-                    )
+                    default=current_register_set,
                 ): selector.SelectSelector(
                     selector.SelectSelectorConfig(
                         options=[
                             selector.SelectOptionDict(
                                 value=REGISTER_SET_BASIC,
-                                label="Basic (Essential sensors, fastest, low overhead)"
+                                label="Basic (Essential sensors, fastest, low overhead)",
                             ),
                             selector.SelectOptionDict(
                                 value=REGISTER_SET_BASIC_PLUS,
-                                label="Basic+ (adds VA, PF, neutral, if you need it)"
+                                label="Basic+ (adds VA, PF, neutral, if you need it)",
                             ),
                             selector.SelectOptionDict(
                                 value=REGISTER_SET_FULL,
-                                label="Full (All registers, slowest, heavy)"
+                                label="Full (All registers, slowest, heavy)",
                             ),
                         ],
                         mode=selector.SelectSelectorMode.DROPDOWN,
                     )
                 ),
-            }),
+                vol.Required(
+                    "update_interval",
+                    default=current_interval,
+                ): vol.All(
+                    vol.Coerce(int),
+                    vol.Range(min=5, max=300),  # 5 seconds to 5 minutes
+                ),
+            }
         )
+
+        return self.async_show_form(step_id="init", data_schema=data_schema)
