@@ -92,8 +92,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def async_get_options_flow(config_entry: ConfigEntry):
-    """Return the options flow handler."""
+async def async_get_options_flow(hass: HomeAssistant, config_entry: ConfigEntry):
     return OptionsFlowHandler(config_entry)
 
 
