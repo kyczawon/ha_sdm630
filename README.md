@@ -58,7 +58,7 @@ See [here](https://github.com/partach/ha_sdm630/discussions)
 See [CHANGELOG.md](https://github.com/partach/ha_sdm630/blob/main/CHANGELOG.md)
 
 ## Issues
-Report at GitHub [Issues](https://github.com/partach/ha_sdm6300/issues)
+Report at GitHub [Issues](https://github.com/partach/ha_sdm630/issues)
 
 ## Support development
 If you like it and find it usefull or want to support this and future developments it would be greatly appreciated :)
