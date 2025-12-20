@@ -55,6 +55,8 @@ _BASIC_REGISTERS = {
     "import_energy": {"address": 72, "name": "Import Energy", "unit": "kWh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
     "export_energy": {"address": 74, "name": "Export Energy", "unit": "kWh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
     "total_kwh": {"address": 342, "name": "Total kWh", "unit": "kWh", "device_class": "energy", "state_class": "total", "precision": 2},
+    "import_varh_since_last_reset": {"address": 76, "name": "Import VArh Since Last Reset", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
+    "export_varh_since_last_reset": {"address": 78, "name": "Export VArh Since Last Reset", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
 }
 
 _BASIC_PLUS_REGISTERS = {
@@ -86,8 +88,6 @@ _FULL_REGISTERS = {
     "total_system_var": {"address": 60, "name": "Total System VAr", "unit": "VAr", "device_class": "reactive_power", "state_class": "measurement", "precision": 2,"word_order": "BA"},
     "total_system_power_factor": {"address": 62, "name": "Total System Power Factor", "unit": None, "device_class": "power_factor", "state_class": "measurement", "precision": 3,"word_order": "BA"},
     "total_system_phase_angle": {"address": 66, "name": "Total System Phase Angle", "unit": "deg", "state_class": "measurement", "precision": 2},
-    "import_varh_since_last_reset": {"address": 76, "name": "Import VArh Since Last Reset", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
-    "export_varh_since_last_reset": {"address": 78, "name": "Export VArh Since Last Reset", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
     "vah_since_last_reset": {"address": 80, "name": "VAh Since Last Reset", "unit": "kVAh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
     "ah_since_last_reset": {"address": 82, "name": "Ah Since Last Reset", "unit": "Ah", "state_class": "total_increasing", "precision": 2},
     "total_system_power_demand": {"address": 84, "name": "Total System Power Demand", "unit": "W", "device_class": "power", "state_class": "measurement", "precision": 2},
@@ -104,7 +104,7 @@ _FULL_REGISTERS = {
     "phase_3_current_thd": {"address": 244, "name": "Phase 3 Current THD", "unit": "%", "state_class": "measurement", "precision": 2},
     "average_line_to_neutral_volts_thd": {"address": 248, "name": "Average Line to Neutral Volts THD", "unit": "%", "state_class": "measurement", "precision": 2},
     "average_line_current_thd": {"address": 250, "name": "Average Line Current THD", "unit": "%", "state_class": "measurement", "precision": 2},
-    "total_system_power_factor_s": {"address": 254, "name": "Total System Power Factor Signed", "unit": None, "state_class": "measurement", "precision": 2},
+    "total_system_power_factor_s": {"address": 254, "name": "Total System Power Factor Signed", "unit": None, "state_class": "measurement", "precision": 2,"word_order": "BA"},
     "phase_1_current_demand": {"address": 258, "name": "Phase 1 Current Demand", "unit": "A", "device_class": "current", "state_class": "measurement", "precision": 2},
     "phase_2_current_demand": {"address": 260, "name": "Phase 2 Current Demand", "unit": "A", "device_class": "current", "state_class": "measurement", "precision": 2},
     "phase_3_current_demand": {"address": 262, "name": "Phase 3 Current Demand", "unit": "A", "device_class": "current", "state_class": "measurement", "precision": 2},
