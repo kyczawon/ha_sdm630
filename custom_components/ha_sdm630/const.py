@@ -55,8 +55,8 @@ _BASIC_REGISTERS = {
     "import_energy": {"address": 72, "name": "Import Energy", "unit": "kWh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
     "export_energy": {"address": 74, "name": "Export Energy", "unit": "kWh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
     "total_kwh": {"address": 342, "name": "Total kWh", "unit": "kWh", "device_class": "energy", "state_class": "total", "precision": 2},
-    "import_varh_since_last_reset": {"address": 76, "name": "Import VArh Since Last Reset", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
-    "export_varh_since_last_reset": {"address": 78, "name": "Export VArh Since Last Reset", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
+    "import_varh_since_last_reset": {"address": 76, "name": "Import VArh Since Last Reset", "unit": "kVArh", "device_class": None, "state_class": "total_increasing", "precision": 2},
+    "export_varh_since_last_reset": {"address": 78, "name": "Export VArh Since Last Reset", "unit": "kVArh", "device_class": None, "state_class": "total_increasing", "precision": 2},
 }
 
 _BASIC_PLUS_REGISTERS = {
@@ -115,7 +115,7 @@ _FULL_REGISTERS = {
     "line_2_to_line_3_volts_thd": {"address": 336, "name": "Line 2 to Line 3 Volts THD", "unit": "%", "state_class": "measurement", "precision": 2},
     "line_3_to_line_1_volts_thd": {"address": 338, "name": "Line 3 to Line 1 Volts THD", "unit": "%", "state_class": "measurement", "precision": 2},
     "average_line_to_line_volts_thd": {"address": 340, "name": "Average Line to Line Volts THD", "unit": "%", "state_class": "measurement", "precision": 2},
-    "total_kvarh": {"address": 344, "name": "Total kVArh", "unit": "kVArh", "device_class": "energy", "state_class": "total", "precision": 2},
+    "total_kvarh": {"address": 344, "name": "Total kVArh", "unit": "kVArh", "device_class": None, "state_class": "total", "precision": 2},
     "l1_import_active_energy": {"address": 346, "name": "L1 Import Active Energy", "unit": "kWh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
     "l2_import_active_energy": {"address": 348, "name": "L2 Import Active Energy", "unit": "kWh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
     "l3_import_active_energy": {"address": 350, "name": "L3 Import Active Energy", "unit": "kWh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
@@ -125,15 +125,15 @@ _FULL_REGISTERS = {
     "l1_total_active_energy": {"address": 358, "name": "L1 Total Active Energy", "unit": "kWh", "device_class": "energy", "state_class": "total", "precision": 2},
     "l2_total_active_energy": {"address": 360, "name": "L2 Total Active Energy", "unit": "kWh", "device_class": "energy", "state_class": "total", "precision": 2},
     "l3_total_active_energy": {"address": 362, "name": "L3 Total Active Energy", "unit": "kWh", "device_class": "energy", "state_class": "total", "precision": 2},
-    "l1_import_reactive_energy": {"address": 364, "name": "L1 Import Reactive Energy", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
-    "l2_import_reactive_energy": {"address": 366, "name": "L2 Import Reactive Energy", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
-    "l3_import_reactive_energy": {"address": 368, "name": "L3 Import Reactive Energy", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
-    "l1_export_reactive_energy": {"address": 370, "name": "L1 Export Reactive Energy", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
-    "l2_export_reactive_energy": {"address": 372, "name": "L2 Export Reactive Energy", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
-    "l3_export_reactive_energy": {"address": 374, "name": "L3 Export Reactive Energy", "unit": "kVArh", "device_class": "energy", "state_class": "total_increasing", "precision": 2},
-    "l1_total_reactive_energy": {"address": 376, "name": "L1 Total Reactive Energy", "unit": "kVArh", "device_class": "energy", "state_class": "total", "precision": 2},
-    "l2_total_reactive_energy": {"address": 378, "name": "L2 Total Reactive Energy", "unit": "kVArh", "device_class": "energy", "state_class": "total", "precision": 2},
-    "l3_total_reactive_energy": {"address": 380, "name": "L3 Total Reactive Energy", "unit": "kVArh", "device_class": "energy", "state_class": "total", "precision": 2},
+    "l1_import_reactive_energy": {"address": 364, "name": "L1 Import Reactive Energy", "unit": "kVArh", "device_class": None, "state_class": "total_increasing", "precision": 2},
+    "l2_import_reactive_energy": {"address": 366, "name": "L2 Import Reactive Energy", "unit": "kVArh", "device_class": None, "state_class": "total_increasing", "precision": 2},
+    "l3_import_reactive_energy": {"address": 368, "name": "L3 Import Reactive Energy", "unit": "kVArh", "device_class": None, "state_class": "total_increasing", "precision": 2},
+    "l1_export_reactive_energy": {"address": 370, "name": "L1 Export Reactive Energy", "unit": "kVArh", "device_class": None, "state_class": "total_increasing", "precision": 2},
+    "l2_export_reactive_energy": {"address": 372, "name": "L2 Export Reactive Energy", "unit": "kVArh", "device_class": None, "state_class": "total_increasing", "precision": 2},
+    "l3_export_reactive_energy": {"address": 374, "name": "L3 Export Reactive Energy", "unit": "kVArh", "device_class": None, "state_class": "total_increasing", "precision": 2},
+    "l1_total_reactive_energy": {"address": 376, "name": "L1 Total Reactive Energy", "unit": "kVArh", "device_class": None, "state_class": "total", "precision": 2},
+    "l2_total_reactive_energy": {"address": 378, "name": "L2 Total Reactive Energy", "unit": "kVArh", "device_class": None, "state_class": "total", "precision": 2},
+    "l3_total_reactive_energy": {"address": 380, "name": "L3 Total Reactive Energy", "unit": "kVArh", "device_class": None, "state_class": "total", "precision": 2},
 }
 
 REGISTER_SETS = {
