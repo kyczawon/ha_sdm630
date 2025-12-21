@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from pymodbus.client import AsyncModbusSerialClient, AsyncModbusTcpClient
-from homeassistant.helpers.device_registry as dr
+from homeassistant.helpers import device_registry
 
 from .const import (
     DOMAIN,
@@ -79,8 +79,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     coordinator.config = config
     coordinator.hub_key = hub_key
     # Register device – this gives the nice hub view
-    device_registry = dr.async_get(hass)
-    device_registry.async_get_or_create(
+    dev_reg = device_registry.async_get(hass)
+    dev_reg.async_get_or_create(
         config_entry_id=entry.entry_id,
         identifiers={(DOMAIN, entry.unique_id or hub_key)},
         name=entry.title or "SDM-630",
