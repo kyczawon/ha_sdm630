@@ -6,14 +6,13 @@ from datetime import timedelta
 from typing import Dict
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from pymodbus.client import AsyncModbusSerialClient, AsyncModbusTcpClient
 from pymodbus.exceptions import ModbusException, ConnectionException
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class HA_SDM630Coordinator(DataUpdateCoordinator):
-    def __init__(self, hass, client: AsyncModbusSerialClient, slave_id: int, register_map: dict):
+    def __init__(self, hass, client, slave_id: int, register_map: dict):
         super().__init__(
             hass,
             _LOGGER,
