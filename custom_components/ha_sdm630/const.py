@@ -1,5 +1,4 @@
 """Constants for the Eastron SDM630 integration."""
-from typing import Dict
 
 DOMAIN = "ha_sdm630"
 
