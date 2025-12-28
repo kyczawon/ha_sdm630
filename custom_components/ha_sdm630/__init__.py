@@ -162,7 +162,7 @@ class SDM630SerialHub:
         if self.client is not None:
             if self.client.connected:
                 try:
-                    await self.client.close()
+                    self.client.close()
                     _LOGGER.debug("Successfully closed SDM630 connection")
                 except Exception as err:
                     _LOGGER.exception("Unexpected error closing SDM630 connection: %s", err)
@@ -192,6 +192,6 @@ class SDM630TcpHub:
         if self.client is not None:
             if self.client.connected:
                 try:
-                    await self.client.close()
+                    self.client.close()
                 except Exception as err:
                     _LOGGER.exception("Unexpected error closing SDM630 connection for tcp: %s", err)
