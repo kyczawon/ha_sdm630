@@ -19,6 +19,7 @@ from .const import (
     CONF_SLAVE_ID,
     CONF_STOPBITS,
     CONF_REGISTER_SET,
+    CONF_UPDATE_INTERVAL,
     CONNECTION_TYPE_SERIAL,
     DEFAULT_BAUDRATE,
     DEFAULT_BYTESIZE,
@@ -66,7 +67,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             hubs[hub_key] = SDM630TcpHub(hass, host, port)
 
     hub = hubs[hub_key]
-    update_interval = config_entry.options.get(CONF_UPDATE_INTERVAL, 10)
+    update_interval = entry.options.get(CONF_UPDATE_INTERVAL, 10)
     # Create coordinator with shared client and selected registers
     coordinator = HA_SDM630Coordinator(
         hass,
